@@ -1,4 +1,0 @@
-- fastapi initialization
-- Routes Creation
-- http methods (get,post)
-- pydantic schema Creation

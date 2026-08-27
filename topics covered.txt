@@ -1,0 +1,10 @@
+- fastapi initialization
+- Routes Creation
+- http methods (get,post)
+- pydantic schema Creation
+- postgreSQL connection with fastAPI
+- sqlalchemy (object relational models)
+- database tables creation using python
+- fastapi Depends functionality
+- HTTP Exceptions
+- 
