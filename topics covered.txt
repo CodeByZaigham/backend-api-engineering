@@ -7,4 +7,9 @@
 - database tables creation using python
 - fastapi Depends functionality
 - HTTP Exceptions
+- database connection pooling (IMPORTANT!)
+- User Authentications (OAuth2PasswordRequestForm)
+- Password hashing (pwdlib)
+- JWT tokenization
+- Oauth2 Authorization (OAuth2PasswordBearer)
 - 
