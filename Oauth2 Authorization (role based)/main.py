@@ -49,7 +49,32 @@ def userlogin(data:OAuth2PasswordRequestForm=Depends() , db:Session=Depends(get_
      token=create_jwt_token(data={"sub":str(user.userid),"role":user.role},expiry=token_expiry)
      return {"access_token":token , "token_type":"bearer"}
 
+#secured endpoint ->only authorized access
+#As a admin, you want to list all the user accounts in the database         
+@app.get("/userlist",response_model=List[showuser])
+def list_users(db:Session=Depends(get_db) , token:tokendata=Depends(decode_jwt)):
+     if token.role=="admin":
+          tokenbearer=db.query(User).filter(User.userid==token.userid).first()
+          if tokenbearer.disabled:
+               raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Admin account is disabled", 
+                    headers={"WWW-Authenticate": "Bearer"}
+               )
+          userlist=[]
+          users=db.query(User).filter(User.role=="user")
+          for u in users:
+               user=showuser(
+                    userid=u.userid,
+                    username=u.username,
+                    email=u.email,
+                    age=u.age,
+                    role=u.role,
+                    disabled=u.disabled,
+               )
+               userlist.append(user)
 
+          return userlist
 
 
           
