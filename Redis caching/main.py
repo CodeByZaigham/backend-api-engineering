@@ -59,7 +59,34 @@ def userlogin(data:OAuth2PasswordRequestForm=Depends() , db:Session=Depends(get_
 
 #secured endpoint ->only authorized access
 #As a admin, you want to list all the user accounts in the database         
-
+@app.get("/userlist",response_model=List[dict])
+def list_users(db:Session=Depends(get_db) , token:tokendata=Depends(decode_jwt)):
+     if token.role=="admin":
+          tokenbearer=db.query(User).filter(User.userid==token.userid).first()
+          if tokenbearer.disabled:
+               raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Admin account is disabled", 
+                    headers={"WWW-Authenticate": "Bearer"}
+               )
+          
+          userlist=app.state.redis.get("userlist") # Retrieving from redis
+          if userlist is None:
+               userlist=[]
+               users=db.query(User).filter(User.role=="user")
+               for u in users:
+                    user=showuser(
+                         userid=u.userid,
+                         username=u.username,
+                         email=u.email,
+                         age=u.age,
+                         role=u.role,
+                         disabled=u.disabled,
+                    )
+                    userlist.append(user.model_dump())
+               app.state.redis.set("userlist",json.dumps(userlist)) # -> caching
+               return userlist
+          return json.loads(userlist)
 
 
           
